@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>javascript制作九宫格抽奖 | 博识晴天的小屋</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用纯JavaScript制作九宫格抽奖demo，主要使用for()函数、setTimeout()函数和forEach()函数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript制作九宫格抽奖">
+<meta property="og:url" content="http://example.com/2020/12/06/javascript%E5%88%B6%E4%BD%9C%E4%B9%9D%E5%AE%AB%E6%A0%BC%E6%8A%BD%E5%A5%96/index.html">
+<meta property="og:site_name" content="博识晴天的小屋">
+<meta property="og:description" content="使用纯JavaScript制作九宫格抽奖demo，主要使用for()函数、setTimeout()函数和forEach()函数。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://sduttest.deepdesigner.top/js%E6%8A%BD%E5%A5%96.png">
+<meta property="article:published_time" content="2020-12-06T05:50:54.000Z">
+<meta property="article:modified_time" content="2020-12-07T03:26:43.435Z">
+<meta property="article:author" content="博识晴天">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://sduttest.deepdesigner.top/js%E6%8A%BD%E5%A5%96.png">
+  
+    <link rel="icon" href="http://sduttest.deepdesigner.top/%E7%8C%AB.png">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightBlock(block);
+      });
+    });
+  </script>
+  
+<link rel="stylesheet" href="/css/index.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.20/lodash.core.js"></script>
+
+<body style="
+
+
+  background-color: #eff0f6
+
+">
+  <div id="container">
+    <nav id="nav">
+  <header class="header">
+    <a href="/" class="title">deepdesigner</a>
+  </header>
+  <div class="ctnWrap">
+    <div class="icons">
+      
+      
+      <!-- javaScript遍历对象 -->
+      
+      
+      
+      <a href="https://github.com/boshipingtian" target="_blank"
+        class="nav-icn iconfont icon-github"></a>
+      
+      
+      
+    </div>
+    <div class="menu">
+      
+      
+
+      
+      <a href="/"
+        class="nav-menu ">HOME</a>
+      
+      
+
+      
+      <a href="/archives"
+        class="nav-menu ">ARCHIVE</a>
+      
+      
+      
+    </div>
+  </div>
+</nav>
+    <div id="main"><section class="article">
+  <h2 class="title">javascript制作九宫格抽奖</h2>
+  <p class="sub">12月 6, 2020</p>
+  <article class="content">
+    <p><code>案例要求</code></p>
+<ol>
+<li> <code>抽奖过程实现轮转高亮效果</code></li>
+<li> <code>随机红包金额可以设置范围</code></li>
+<li> <code>抽中每一项奖品的概率能被设置</code></li>
+<li> <code>抽奖结束后显示奖品</code></li>
+</ol>
+<h4 id="实现方法（仅供参考）"><a href="#实现方法（仅供参考）" class="headerlink" title="实现方法（仅供参考）"></a>实现方法（仅供参考）</h4><h5 id="抽奖过程实现轮转高亮效果"><a href="#抽奖过程实现轮转高亮效果" class="headerlink" title="抽奖过程实现轮转高亮效果"></a>抽奖过程实现轮转高亮效果</h5><p>实现方式大致为依次为元素添加，删除一个选中时的类名（这里叫做<strong>mark类名</strong>），即可实现转动的效果。</p>
+<h6 id="html代码如下"><a href="#html代码如下" class="headerlink" title="html代码如下"></a>html代码如下</h6><pre><code class="html">&lt;body&gt;
+    &lt;div class=&quot;containter&quot;&gt;
+        &lt;div class=&quot;item center mark&quot;&gt;一号奖品&lt;/div&gt;
+        &lt;div class=&quot;item center&quot;&gt;随机红包&lt;/div&gt;
+        &lt;div class=&quot;item center&quot;&gt;二号奖品&lt;/div&gt;
+        &lt;div class=&quot;item center&quot;&gt;六号奖品&lt;/div&gt;
+        &lt;div id=&quot;button&quot; class=&quot;button center &quot; onclick=&quot;test()&quot;&gt;开始抽奖&lt;/div&gt;
+        &lt;div class=&quot;item center&quot;&gt;三号奖品&lt;/div&gt;
+        &lt;div class=&quot;item center&quot;&gt;五号奖品&lt;/div&gt;
+        &lt;div class=&quot;item center&quot;&gt;四号奖品&lt;/div&gt;
+        &lt;div class=&quot;item center&quot;&gt;谢谢惠顾&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;</code></pre>
+<h6 id="CSS代码如下"><a href="#CSS代码如下" class="headerlink" title="CSS代码如下"></a>CSS代码如下</h6><pre><code class="css">* &#123;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    font-size: 20px;
+&#125;
+
+.center &#123;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+&#125;
+
+body &#123;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100vh;
+&#125;
+
+.containter &#123;
+    width: 800px;
+    height: 800px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+&#125;
+
+.button &#123;
+    background-color: #747d8c;
+    color: #fff;
+&#125;
+
+.item &#123;
+    background-color: #1e90ff;
+&#125;
+
+.mark &#123;
+    box-shadow: 0px 0px 10px #ff4757;
+    background-color: #ff7f50;
+&#125;</code></pre>
+<h6 id="JS代码如下"><a href="#JS代码如下" class="headerlink" title="JS代码如下"></a>JS代码如下</h6><pre><code class="js">function select() &#123;
+    const item = document.querySelectorAll(&#39;.item&#39;)
+    for (let key = 0; key &lt; item.length + 2; key++) &#123;
+        console.log(key)
+        var test = setTimeout(() =&gt; &#123;
+            item.forEach((e) =&gt; &#123;
+                e.classList.remove(&#39;mark&#39;)
+            &#125;)
+            item[index[key]].classList.add(&#39;mark&#39;)
+        &#125;, key * 150);
+    &#125;
+    clearTimeout(test)
+&#125;</code></pre>
+<p>详解</p>
+<pre><code class="js">const item = document.querySelectorAll(&#39;.item&#39;)</code></pre>
+<p>使用<code>querySelectorAll</code>选取的是一个<code>NodeList</code>对象，在<code>item.length</code>中可以看到数组长度是 <strong>8</strong>，点进去可以看到各个元素中所拥有的<code>css属性</code></p>
+<p><img src="http://sduttest.deepdesigner.top/image-20201205182224862.png">)</p>
+<pre><code class="js">item.forEach((e) =&gt; &#123;
+     e.classList.remove(&#39;mark&#39;)
+    console.log(e.classList)
+&#125;)</code></pre>
+<p>通过<code>item.forEach()</code>方法可以依次循环操作每一个元素，从<strong>0—7</strong>。</p>
+<p><strong>(e) =&gt; {}**中的</strong>e**就是对应的每一次操作所对应的元素。执行<code>console.log(e.classList)</code>在控制台可以看到打印出了各个元素所对应的<code>class类名</code>。接下来只需要执行<code>e.classList.remove(&#39;mark&#39;)</code>就可以删除所有元素拥有的<code>mark类名</code></p>
+<p><img src="http://sduttest.deepdesigner.top/image-20201205182300062.png"></p>
+<p>那么如何按照顺序依次添加mark类名呢？</p>
+<p>这里就要用到一个很重要的方法（在所有语言中都是相当重要的方法）—— <strong>循环</strong></p>
+<p>这里就使用for循环，你们也可以使用其他循环，例如<code>while</code>，<code>for</code>，<code>forEach</code>（这里的<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36470686/article/details/84679312">forEach</a>循环用途特殊），<strong>基础的for循环知识就不在这里赘述，自行学习</strong></p>
+<p><strong>定时器</strong>——实现依次变化的关键</p>
+<p><code>setTimeout(() =&gt; &#123;&#125;, timeout);</code>，<code>timeout</code>指延时时间，单位是毫秒。</p>
+<p><code>() =&gt; &#123;&#125;</code>是一个<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ranyonsue/p/10181035.html">匿名函数</a>，这个函数和for循环一起使用，</p>
+<p>代码如下</p>
+<pre><code class="js">for (let key = 0; key &lt; item.length + 2; key++) &#123;
+        var test = setTimeout(() =&gt; &#123;
+            item.forEach((e) =&gt; &#123;
+                e.classList.remove(&#39;mark&#39;)
+            &#125;)
+            item[key].classList.add(&#39;mark&#39;)
+            // 根据index顺时针运行
+            // item[index[key]].classList.add(&#39;mark&#39;)
+        &#125;, key * 150);
+    &#125;
+clearTimeout(test)</code></pre>
+<p>for循环第一次时，key=0，执行代码运行定时器，定时器中的函数</p>
+<pre><code>item.forEach((e) =&gt; &#123;
+  e.classList.remove(&#39;mark&#39;)
+&#125;)</code></pre>
+<p>将所有元素的mark类名删除，使用函数在item[0]元素增加mark类名</p>
+<pre><code>item[key].classList.add(&#39;mark&#39;)</code></pre>
+<p>第一次的延时时间为 <code>key * 150 = 0*150 = 0ms</code>。</p>
+<p><strong>依次类推，通过for循环依次执行</strong>，<code>clearTimeout(test)</code>来清除定时器</p>
+<p>这样后应该就能看到效果了，如果想要实现顺时针运行，就在设置通用变量设置index索引表。</p>
+<p>完整代码如下</p>
+<pre><code class="js">let index = [0, 1, 2, 4, 7, 6, 5, 3, 0]
+
+function select() &#123;
+    const item = document.querySelectorAll(&#39;.item&#39;)
+    for (let key = 0; key &lt; item.length + 2; key++) &#123;
+        console.log(key)
+        var test = setTimeout(() =&gt; &#123;
+            item.forEach((e) =&gt; &#123;
+                e.classList.remove(&#39;mark&#39;)
+            &#125;)
+            item[index[key]].classList.add(&#39;mark&#39;)
+        &#125;, key * 150);
+    &#125;
+    clearTimeout(test)
+&#125;</code></pre>
+<h5 id="随机红包金额可以设置范围"><a href="#随机红包金额可以设置范围" class="headerlink" title="随机红包金额可以设置范围"></a>随机红包金额可以设置范围</h5><p>方法大致为利用<code>Math.random()*5</code>产生从0—5的随机数，使用<code>Math.floor()</code>向下取整为0—4，在定义一个红包变量的数组<code>awardArr = [9.99, 19.99, 29.99, 39.99, 99.99]</code>储存红包数值。</p>
+<pre><code class="js">let awardArr = [9.99, 19.99, 29.99, 39.99, 99.99]
+
+function money(e) &#123;
+    // 取随机数1-5
+    let money = Math.random() * 5
+    // 取整0-4
+    let moneyNumber = Math.floor(money)
+    award = awardArr[moneyNumber] + &#39;元&#39;
+    console.log(&#39;红包金额：&#39;, awardArr[moneyNumber] + &#39;元&#39;)
+    // 写入中央的按钮中
+    buttonContent.innerHTML = &#39;红包金额：&#39; + awardArr[moneyNumber] + &#39;元&#39;
+&#125;</code></pre>
+<h5 id="抽中每一项奖品的概率能被设置"><a href="#抽中每一项奖品的概率能被设置" class="headerlink" title="抽中每一项奖品的概率能被设置"></a>抽中每一项奖品的概率能被设置</h5><p>方式大致是产生0—100的随机值在数值区间的概率来实现，例如：</p>
+<ul>
+<li><p>0 &lt; 本次抽奖随机数 &lt;= 1，表示抽中一等奖；</p>
+</li>
+<li><p>1 &lt; 本次抽奖随机数 &lt;= 5，表示抽中二等奖；</p>
+</li>
+<li><p>5 &lt; 本次抽奖随机数 &lt;= 20，表示抽中三等奖；</p>
+</li>
+<li><p>本次抽奖随机数 &gt; 20，表示未中奖。</p>
+<h6 id="实例代码"><a href="#实例代码" class="headerlink" title="实例代码"></a>实例代码</h6></li>
+</ul>
+<pre><code class="js">let exact = 1
+// 设置抽奖概率
+let awardProbability = [
+    // 依次递增
+    &#123; &quot;name&quot;: &quot;一号奖品&quot;, &quot;weight&quot;: 10 &#125;,
+    &#123; &quot;name&quot;: &quot;随机红包&quot;, &quot;weight&quot;: 20 &#125;,
+    &#123; &quot;name&quot;: &quot;二号奖品&quot;, &quot;weight&quot;: 30 &#125;,
+    &#123; &quot;name&quot;: &quot;三号奖品&quot;, &quot;weight&quot;: 40 &#125;,
+    &#123; &quot;name&quot;: &quot;谢谢惠顾&quot;, &quot;weight&quot;: 50 &#125;,
+    &#123; &quot;name&quot;: &quot;四号奖品&quot;, &quot;weight&quot;: 60 &#125;,
+    &#123; &quot;name&quot;: &quot;五号奖品&quot;, &quot;weight&quot;: 70 &#125;,
+    &#123; &quot;name&quot;: &quot;六号奖品&quot;, &quot;weight&quot;: 100 &#125;,
+]</code></pre>
+<blockquote>
+<p>产生随机数<code>Math.random()</code>，默认产生0—1的随机值，取小数<code>.toFixed(exact)</code>，<code>exact</code>是取几位小数</p>
+</blockquote>
+<blockquote>
+<p><code>Math.floor()</code>是向下取整。</p>
+</blockquote>
+<h6 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h6><pre><code class="js">let exact = 1
+// 设置抽奖概率
+let awardProbability = [
+    // 依次递增
+    &#123; &quot;name&quot;: &quot;一号奖品&quot;, &quot;weight&quot;: 10 &#125;,
+    &#123; &quot;name&quot;: &quot;随机红包&quot;, &quot;weight&quot;: 20 &#125;,
+    &#123; &quot;name&quot;: &quot;二号奖品&quot;, &quot;weight&quot;: 30 &#125;,
+    &#123; &quot;name&quot;: &quot;三号奖品&quot;, &quot;weight&quot;: 40 &#125;,
+    &#123; &quot;name&quot;: &quot;谢谢惠顾&quot;, &quot;weight&quot;: 50 &#125;,
+    &#123; &quot;name&quot;: &quot;四号奖品&quot;, &quot;weight&quot;: 60 &#125;,
+    &#123; &quot;name&quot;: &quot;五号奖品&quot;, &quot;weight&quot;: 70 &#125;,
+    &#123; &quot;name&quot;: &quot;六号奖品&quot;, &quot;weight&quot;: 100 &#125;,
+]
+// 设置奖品项
+let awardIndex = 0
+
+function Probability(params) &#123;
+    // 生成随机数0-100
+    let Number = Math.random() * 100
+    let awardNumber = Number.toFixed(exact)
+    console.log(&#39;生成随机数0-100：&#39;, awardNumber)
+    if (0 &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[0].weight) &#123;
+        console.log(&quot;一号奖品&quot;)
+        awardIndex = 1
+    &#125;
+    else if (awardProbability[0].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[1].weight) &#123;
+        console.log(&quot;随机红包&quot;)
+        awardIndex = 2
+    &#125;
+    else if (awardProbability[1].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[2].weight) &#123;
+        console.log(&quot;二号奖品&quot;)
+        awardIndex = 3
+    &#125;
+    else if (awardProbability[2].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[3].weight) &#123;
+        console.log(&quot;三号奖品&quot;)
+        awardIndex = 4
+    &#125;
+    else if (awardProbability[3].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[4].weight) &#123;
+        console.log(&quot;谢谢惠顾&quot;)
+        awardIndex = 5
+    &#125;
+    else if (awardProbability[4].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[5].weight) &#123;
+        console.log(&quot;四号奖品&quot;)
+        awardIndex = 6
+    &#125;
+    else if (awardProbability[5].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[6].weight) &#123;
+        console.log(&quot;五号奖品&quot;)
+        awardIndex = 7
+    &#125;
+    else if (awardProbability[6].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[7].weight) &#123;
+        console.log(&quot;六号奖品&quot;)
+        awardIndex = 8
+    &#125;
+    else &#123;
+        alert(&quot;程序出错了&quot;)
+    &#125;
+&#125;</code></pre>
+<h5 id="抽奖结束后显示奖品"><a href="#抽奖结束后显示奖品" class="headerlink" title="抽奖结束后显示奖品"></a>抽奖结束后显示奖品</h5><p>这里使用最后一次for循环来停止到抽到的奖品那里。</p>
+<pre><code class="js">function last() &#123;
+    const item = document.querySelectorAll(&#39;.item&#39;)
+    for (let key = 0; key &lt; awardIndex; key++) &#123;
+        console.log(key)
+        setTimeout(() =&gt; &#123;
+            item.forEach((e) =&gt; &#123;
+                e.classList.remove(&#39;mark&#39;)
+            &#125;)
+            // 根据index顺时针运行
+            item[index[key]].classList.add(&#39;mark&#39;)
+        &#125;, key * 150);
+    &#125;
+    clearTimeout(test)
+    console.log(&quot;设置奖品项:&quot;, awardIndex)
+
+    switch (awardIndex) &#123;
+        case 1:
+            inner(&quot;一号奖品&quot;)
+            break;
+        case 2:
+            money()
+            break;
+        case 3:
+            inner(&quot;二号奖品&quot;)
+            break;
+        case 4:
+            inner(&quot;三号奖品&quot;)
+            break;
+        case 5:
+            inner(&quot;谢谢惠顾&quot;)
+            break;
+        case 6:
+            inner(&quot;四号奖品&quot;)
+            break;
+        case 7:
+            inner(&quot;五号奖品&quot;)
+            break;
+        case 8:
+            inner(&quot;六号奖品&quot;)
+            break;
+        default:
+            break;
+    &#125;
+&#125;</code></pre>
+<p>这里的<code>awardIndex</code>参数就是确定奖品概率时设定的值从1—8，通过 <a target="_blank" rel="noopener" href="https://www.w3school.com.cn/js/js_switch.asp">switch</a>来判断写入哪个奖品。</p>
+<blockquote>
+<p>inner()是自定的函数</p>
+</blockquote>
+<blockquote>
+<p>实现方法多种多样，这里使用<code>innerHTML</code>来写入到中心的按钮框中。</p>
+</blockquote>
+<p>完整代码如下</p>
+<pre><code class="js">function inner(params) &#123;
+    buttonContent.innerHTML = params
+&#125;</code></pre>
+<blockquote>
+<p><code>params</code>是定义的参数，可以在其他函数调用时将参数传入进来。</p>
+</blockquote>
+<h5 id="主代码"><a href="#主代码" class="headerlink" title="主代码"></a>主代码</h5><pre><code class="js">// 循环次数
+let cycle = 2
+
+function test(params) &#123;
+    Probability()
+    let i = 0
+    for (i; i &lt; cycle; i++) &#123;
+        console.log(i)
+        setTimeout(() =&gt; &#123;
+            select()
+        &#125;, 1200 * i);
+        console.log(&quot;当前的i是：&quot;, i)
+    &#125;
+    setTimeout(() =&gt; &#123;
+        last()
+    &#125;, 1200 * i);
+&#125;</code></pre>
+<p>首先执行<code>Probability()</code>函数生成随机数，并计算概率，判断奖品，</p>
+<p>随后使用<code>for()</code>循环来完成多次顺时针转动，<code>cycle</code>变量表示旋转次数，</p>
+<p>最后的定时器来完成最后一次顺时针旋转，并把得到的奖品写入中间的按钮中。</p>
+<h4 id="全部代码"><a href="#全部代码" class="headerlink" title="全部代码"></a>全部代码</h4><pre><code class="js">let awardArr = [9.99, 19.99, 29.99, 39.99, 99.99]
+let index = [0, 1, 2, 4, 7, 6, 5, 3, 0]
+let award = &quot;&quot;
+// 设置精确值
+let exact = 1
+// 设置抽奖概率
+let awardProbability = [
+    // 依次递增
+    &#123; &quot;name&quot;: &quot;一号奖品&quot;, &quot;weight&quot;: 10 &#125;,
+    &#123; &quot;name&quot;: &quot;随机红包&quot;, &quot;weight&quot;: 20 &#125;,
+    &#123; &quot;name&quot;: &quot;二号奖品&quot;, &quot;weight&quot;: 30 &#125;,
+    &#123; &quot;name&quot;: &quot;三号奖品&quot;, &quot;weight&quot;: 40 &#125;,
+    &#123; &quot;name&quot;: &quot;谢谢惠顾&quot;, &quot;weight&quot;: 50 &#125;,
+    &#123; &quot;name&quot;: &quot;四号奖品&quot;, &quot;weight&quot;: 60 &#125;,
+    &#123; &quot;name&quot;: &quot;五号奖品&quot;, &quot;weight&quot;: 70 &#125;,
+    &#123; &quot;name&quot;: &quot;六号奖品&quot;, &quot;weight&quot;: 100 &#125;,
+]
+// 设置奖品项
+let awardIndex = 0
+// 循环次数
+let cycle = 2
+
+const buttonContent = document.querySelector(&quot;#button&quot;)
+
+// 写入字体
+function inner(params) &#123;
+    buttonContent.innerHTML = params
+&#125;
+
+function money(e) &#123;
+    // 取随机数1-5
+    let money = Math.random() * 5
+    // 取整0-4
+    let moneyNumber = Math.floor(money)
+    award = awardArr[moneyNumber] + &#39;元&#39;
+    console.log(&#39;红包金额：&#39;, awardArr[moneyNumber] + &#39;元&#39;)
+    // 写入中央的按钮中
+    buttonContent.innerHTML = &#39;红包金额：&#39; + awardArr[moneyNumber] + &#39;元&#39;
+&#125;
+
+// Probability
+function Probability(params) &#123;
+    // 生成随机数0-100
+    let Number = Math.random() * 100
+    let awardNumber = Number.toFixed(exact)
+    console.log(&#39;生成随机数0-100：&#39;, awardNumber)
+    if (0 &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[0].weight) &#123;
+        console.log(&quot;一号奖品&quot;)
+        awardIndex = 1
+    &#125;
+    else if (awardProbability[0].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[1].weight) &#123;
+        console.log(&quot;随机红包&quot;)
+        awardIndex = 2
+    &#125;
+    else if (awardProbability[1].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[2].weight) &#123;
+        console.log(&quot;二号奖品&quot;)
+        awardIndex = 3
+    &#125;
+    else if (awardProbability[2].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[3].weight) &#123;
+        console.log(&quot;三号奖品&quot;)
+        awardIndex = 4
+    &#125;
+    else if (awardProbability[3].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[4].weight) &#123;
+        console.log(&quot;谢谢惠顾&quot;)
+        awardIndex = 5
+    &#125;
+    else if (awardProbability[4].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[5].weight) &#123;
+        console.log(&quot;四号奖品&quot;)
+        awardIndex = 6
+    &#125;
+    else if (awardProbability[5].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[6].weight) &#123;
+        console.log(&quot;五号奖品&quot;)
+        awardIndex = 7
+    &#125;
+    else if (awardProbability[6].weight &lt;= awardNumber &amp;&amp; awardNumber &lt;= awardProbability[7].weight) &#123;
+        console.log(&quot;六号奖品&quot;)
+        awardIndex = 8
+    &#125;
+    else &#123;
+        alert(&quot;程序出错了&quot;)
+    &#125;
+&#125;
+// 项目
+function select() &#123;
+    const item = document.querySelectorAll(&#39;.item&#39;)
+    for (let key = 0; key &lt; item.length + 2; key++) &#123;
+        console.log(key)
+        var test = setTimeout(() =&gt; &#123;
+            item.forEach((e) =&gt; &#123;
+                e.classList.remove(&#39;mark&#39;)
+            &#125;)
+            item[index[key]].classList.add(&#39;mark&#39;)
+        &#125;, key * 150);
+    &#125;
+    clearTimeout(test)
+&#125;
+
+function last() &#123;
+    const item = document.querySelectorAll(&#39;.item&#39;)
+    for (let key = 0; key &lt; awardIndex; key++) &#123;
+        console.log(key)
+        setTimeout(() =&gt; &#123;
+            item.forEach((e) =&gt; &#123;
+                e.classList.remove(&#39;mark&#39;)
+            &#125;)
+            // 根据index顺时针运行
+            item[index[key]].classList.add(&#39;mark&#39;)
+        &#125;, key * 150);
+    &#125;
+    clearTimeout(test)
+    console.log(&quot;设置奖品项:&quot;, awardIndex)
+
+    switch (awardIndex) &#123;
+        case 1:
+            inner(&quot;一号奖品&quot;)
+            break;
+        case 2:
+            money()
+            break;
+        case 3:
+            inner(&quot;二号奖品&quot;)
+            break;
+        case 4:
+            inner(&quot;三号奖品&quot;)
+            break;
+        case 5:
+            inner(&quot;谢谢惠顾&quot;)
+            break;
+        case 6:
+            inner(&quot;四号奖品&quot;)
+            break;
+        case 7:
+            inner(&quot;五号奖品&quot;)
+            break;
+        case 8:
+            inner(&quot;六号奖品&quot;)
+            break;
+        default:
+            break;
+    &#125;
+&#125;
+
+function test(params) &#123;
+    Probability()
+    let i = 0
+    for (i; i &lt; cycle; i++) &#123;
+        console.log(i)
+        setTimeout(() =&gt; &#123;
+            select()
+        &#125;, 1200 * i);
+        console.log(&quot;当前的i是：&quot;, i)
+    &#125;
+    setTimeout(() =&gt; &#123;
+        last()
+    &#125;, 1200 * i);
+&#125;</code></pre>
+  </article>
+  <footer class="f-cf">
+    
+      <a href="/2020/12/07/%E9%9D%99%E7%94%B5%E5%A4%8D%E5%8D%B0%E6%9C%BA%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="link f-fl">⟵静电复印机的工作原理</a>
+    
+    
+      <a href="/2020/12/06/hello-world/" class="link f-fr">Hello World⟶</a>
+    
+  </footer>
+</section></div>
+    <!-- Highlight.js -->
+<link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+<script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.20/lodash.core.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+<footer id="footer" class="f-cf">
+
+  1619794359@qq.com
+  
+  
+  
+  · <a href="https://github.com/boshipingtian" target="_blank" class="nav-icn">GitHub</a>
+  
+  
+  
+  <span class="copyright">All rights reserved @ 博识晴天</span>
+</footer>
+  </div>
+</body>
+
+</html>
